@@ -1,120 +1,63 @@
 #!/usr/bin/python3
-"""10. N queens"""
+"""N Queens Module.
 
+Contains the N Queens problem solver.
+"""
 import sys
 
 
-def create_new_board(n):
-    """Function that creates new nxn sized chessboard with 0's."""
+def error_exit(message="", code=1):
+    """Handles exit.
 
-    board = []
-    [board.append([]) for i in range(n)]
-    [row.append(' ') for i in range(n) for row in board]
-    return (board)
-
-
-def copy_board(board):
-    """Function that returns deepcopy of board"""
-
-    if isinstance(board, list):
-        return list(map(copy_board, board))
-
-    return (board)
+    Args:
+        message (str): the message to display on stdout.
+        code (int): the exit code.
+    """
+    print(message)
+    exit(code)
 
 
-def find_method(board):
-    """Function that finds solution for the Queen"""
+def test_pos(board, y):
+    """Tests if wether a queen can be placed at the current position.
 
-    method = []
-    for pos in range(len(board)):
-        for position in range(len(board)):
-            if board[pos][position] == "Q":
-                method.append([pos, position])
-                break
-
-    return (method)
-
-
-def invalid_moves(board, row, col):
-    """Function that shows invalid moves for Queen"""
-
-    for position in range(col + 1, len(board)):
-        board[row][position] = "x"
-
-    for position in range(col - 1, -1, -1):
-        board[row][position] = "x"
-
-    for pos in range(row + 1, len(board)):
-        board[pos][col] = "x"
-
-    for pos in range(row - 1, -1, -1):
-        board[pos][col] = "x"
-
-    c_pos = col + 1
-    for pos in range(row + 1, len(board)):
-        if c_pos >= len(board):
-            break
-
-        board[pos][c_pos] = "x"
-        c_pos += 1
-
-    c_pos = col - 1
-    for pos in range(row - 1, -1, -1):
-        if c_pos < 0:
-            break
-
-        board[pos][c_pos]
-        c_pos -= 1
-
-    c_pos = col + 1
-    for pos in range(row - 1, -1, -1):
-        if c_pos >= len(board):
-            break
-
-        board[pos][c_pos] = "x"
-        c_pos += 1
-
-    c_pos = col - 1
-    for pos in range(row + 1, len(board)):
-        if c_pos < 0:
-            break
-
-        board[pos][c_pos] = "x"
-        c_pos -= 1
+    Args:
+        board (list): the chessboard.
+        y (int): the height parameter.
+    """
+    for i in range(y):
+        if board[y][1] is board[i][1]:
+            return False
+        if abs(board[y][1] - board[i][1]) == y - i:
+            return False
+    return True
 
 
-def correct_method(board, row, queens, solutions):
-    """Function that solves puzzle with recursion"""
+def rec_backtrack(board, y):
+    """Backtrack the possibilities.
 
-    if queens == len(board):
-        solutions.append(find_method(board))
-        return (solutions)
-
-    for position in range(len(board)):
-        if board[row][position] == " ":
-            tmp_board = copy_board(board)
-            tmp_board[row][position] = "Q"
-            invalid_moves(tmp_board, row, position)
-            solutions = correct_method(
-                    tmp_board, row + 1, queens + 1, solutions)
-
-    return (solutions)
+    Args:
+        board (list): the chessboard.
+        y (int): the height parameter.
+    """
+    if y is N:
+        print(board)
+    else:
+        for x in range(N):
+            board[y][1] = x
+            if test_pos(board, y):
+                rec_backtrack(board, y + 1)
 
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: nqueens N")
-        sys.exit(1)
+if len(sys.argv) is not 2:
+    error_exit("Usage: nqueens N")
 
-    if sys.argv[1].isdigit() is False:
-        print("N must be a number")
-        sys.exit(1)
+try:
+    N = int(sys.argv[1])
+except:
+    error_exit("N must be a number")
 
-    if int(sys.argv[1]) < 4:
-        print("N must be at least 4")
-        sys.exit(1)
+if N < 4:
+    error_exit("N must be at least 4")
 
-    board = create_new_board(int(sys.argv[1]))
-    methods = correct_method(board, 0, 0, [])
-    for sol in methods:
-        print(sol)
+board = [[y, 0] for y in range(N)]
+rec_backtrack(board, 0)
